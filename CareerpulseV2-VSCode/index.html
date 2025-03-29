@@ -102,41 +102,46 @@
     </div>
 
     <script>
-      const SUPABASE_URL = "https://YOUR_SUPABASE_URL";
+      const SUPABASE_URL = "https://ekwdztfonrttkfnrznml.supabase.co";
       const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
     
+
+
+
       document.getElementById('waitlist-form').addEventListener('submit', async function(event) {
-        event.preventDefault();
-    
-        const emailInput = document.getElementById('email');
-        const email = emailInput.value.trim();
-    
-        if (!email) return;
-    
-        try {
-          const res = await fetch(`${SUPABASE_URL}/rest/v1/waitlist`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "apikey": SUPABASE_ANON_KEY,
-              "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-              "Prefer": "return=minimal"
-            },
-            body: JSON.stringify({ email })
-          });
-    
-          if (res.ok) {
-            document.getElementById('modal-overlay').style.display = 'block';
-            document.getElementById('confirmation-modal').style.display = 'block';
-            emailInput.value = ''; // Clear input field
-          } else {
-            alert("❌ Something went wrong. Please try again.");
-          }
-        } catch (err) {
-          console.error(err);
-          alert("❌ Network error. Try again.");
-        }
-      });
+  event.preventDefault();
+
+  const emailInput = document.getElementById('email');
+  const email = emailInput.value.trim();
+
+  if (!email) return;
+
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/waitlist`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify({ email })
+    });
+
+    if (response.ok) {
+      document.getElementById('modal-overlay').style.display = 'block';
+      document.getElementById('confirmation-modal').style.display = 'block';
+      emailInput.value = ''; // ✅ Clears input after submission
+    } else {
+      const errorMessage = await response.text();
+      console.error("❌ Supabase Error:", errorMessage);
+      alert("❌ Something went wrong. Please try again.");
+    }
+  } catch (err) {
+    console.error("❌ Network error:", err);
+    alert("❌ Network error. Try again.");
+  }
+});
     </script>    
   </body>
 </html>
